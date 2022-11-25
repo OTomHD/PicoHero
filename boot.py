@@ -1,4 +1,8 @@
 import usb_hid
+import storage, board, digitalio
+
+
+
 
 # This is only one example of a gamepad descriptor, and may not suit your needs.
 GAMEPAD_REPORT_DESCRIPTOR = bytes((
@@ -31,7 +35,6 @@ GAMEPAD_REPORT_DESCRIPTOR = bytes((
     0xC0,        # End Collection
 ))
 
-
 gamepad = usb_hid.Device(
     report_descriptor=GAMEPAD_REPORT_DESCRIPTOR,
     usage_page=0x01,           # Generic Desktop Control
@@ -47,3 +50,12 @@ usb_hid.enable(
      usb_hid.Device.CONSUMER_CONTROL,
      gamepad)
 )
+
+pins = (board.GP7,board.GP8)
+buttons = [digitalio.DigitalInOut(pin) for pin in pins]
+for button in buttons:
+    button.direction = digitalio.Direction.INPUT
+    button.pull = digitalio.Pull.UP
+
+if buttons[0].value and buttons[1].value:
+    storage.disable_usb_drive()
